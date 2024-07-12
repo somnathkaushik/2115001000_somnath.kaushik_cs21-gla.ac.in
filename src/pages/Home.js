@@ -4,7 +4,6 @@ import ProductList from '../components/ProductList';
 import Filter from '../components/Filter';
 import Sort from '../components/Sort';
 import Pagination from '../components/Pagination';
-import { getProducts } from '../services/api';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -15,15 +14,23 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await axios.get('http://20.244.56.144/test/companies/AMZ/categories/Laptop/products', {
-        params: {
-          top: 10,
-          minPrice: filters.minPrice,
-          maxPrice: filters.maxPrice,
-        },
-      });
-      setProducts(response.data);
-      setTotalPages(Math.ceil(response.data.length / 10));
+      try {
+        const response = await axios.get('http://20.244.56.144/test/companies/AMZ/categories/Laptop/products', {
+          params: {
+            top: 10,
+            page,
+            sort,
+            minPrice: filters.minPrice,
+            maxPrice: filters.maxPrice,
+          },
+        });
+
+        const productsData = response.data;
+        setProducts(productsData);
+        setTotalPages(Math.ceil(productsData.length / 10));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
     };
 
     fetchProducts();
